@@ -1,5 +1,6 @@
 import os
 from mlmodels import logistic_regression
+from mlmodels import naive_bayes
 
 
 filename = 'cleaned-framingham.csv'
@@ -8,6 +9,7 @@ filename = 'cleaned-framingham.csv'
 def main():
     file_locate()
     logistic_regression(filename)
+    naive_bayes(filename)
 
 
 def file_locate() -> None:

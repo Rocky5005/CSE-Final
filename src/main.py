@@ -5,6 +5,7 @@ from mlmodels import k_nearest
 from mlmodels import support_vector
 from mlmodels import gradient_boost
 from mlmodels import random_forest
+from mlmodels import compare_performance_with_outliers
 
 
 filename = 'cleaned-framingham.csv'
@@ -18,6 +19,7 @@ def main():
     support_vector(filename)
     gradient_boost(filename)
     random_forest(filename)
+    compare_performance_with_outliers(filename)
 
 
 def file_locate() -> None:

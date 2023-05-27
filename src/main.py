@@ -1,6 +1,10 @@
 import os
 from mlmodels import logistic_regression
 from mlmodels import naive_bayes
+from mlmodels import k_nearest
+from mlmodels import support_vector
+from mlmodels import gradient_boost
+from mlmodels import random_forest
 
 
 filename = 'cleaned-framingham.csv'
@@ -10,6 +14,10 @@ def main():
     file_locate()
     logistic_regression(filename)
     naive_bayes(filename)
+    k_nearest(filename)
+    support_vector(filename)
+    gradient_boost(filename)
+    random_forest(filename)
 
 
 def file_locate() -> None:

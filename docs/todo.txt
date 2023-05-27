@@ -1,0 +1,15 @@
+# todo
+improve models 
+    standardize data for some models - so measurements are on similar scale
+    compare performance with and without outliers
+    potentially resolve data imbalance
+    apply RFE or other technique to adjust parameters
+
+data analysis
+    add additional analysis
+    run analysis on finished models
+    implement traditional algorithm and compare 
+
+interface   
+    create interface using best performing model
+

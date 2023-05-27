@@ -8,6 +8,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+
 
 
 def logistic_regression(filename: str) -> None:  # baseline model
@@ -18,6 +20,14 @@ def logistic_regression(filename: str) -> None:  # baseline model
     features_train, features_test, labels_train, labels_test = \
         train_test_split(features, labels, test_size=0.2,
                          stratify=labels, random_state=42)  # stratified data
+    
+    #Standardization:
+    scaler = StandardScaler()
+    scaler.fit(features_train)
+    scaled_features_train = scaler.transform(features_train)
+    scaled_features_test = scaler.transform(features_test)
+    
+
     model = LogisticRegression(solver='lbfgs', max_iter=4000)
     model.fit(features_train, labels_train)
     labels_pred = model.predict(features_test)
@@ -116,6 +126,15 @@ def random_forest(filename: str) -> None:
     features_train, features_test, labels_train, labels_test = \
         train_test_split(features, labels, test_size=0.2,
                          stratify=labels, random_state=42)
+
+    #Standardization:
+
+    scaler = StandardScaler()
+    scaler.fit(features_train)
+    scaled_features_train = scaler.transform(features_train)
+    scaled_features_test = scaler.transform(features_test)
+
+
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(features_train, labels_train)
     labels_pred = model.predict(features_test)

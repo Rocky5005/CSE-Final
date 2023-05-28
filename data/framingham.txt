@@ -1,0 +1,15 @@
+male: 0 = Female; 1 = Male
+age: Age at exam time.
+currentSmoker: 0 = nonsmoker; 1 = smoker
+cigsPerDay: number of cigarettes smoked per day (estimated average)
+BPMeds: 0 = Not on Blood Pressure medications; 1 = Is on Blood Pressure medications
+prevalentStroke: 0 = Stroke not prevalent in family history; 1 = Stroke prevalent in family history
+prevalentHyp: 0 = Hypertension not prevalent in family history; 1 = Hypertension prevalent in family history
+diabetes: 0 = No; 1 = Yes
+totChol: total cholesterol (mg/dL)
+sysBP: systolic blood pressure (mmHg)
+diaBP: diastolic blood pressure (mmHg)
+BMI: BodyMass Index calculated as: Weight (kg) / Height(meter-squared)
+heartRate Beats/Min (Ventricular)
+glucose: total glucose mg/dL
+TenYearCHD: 0 = Patient doesn’t have 10-year risk of future coronary heart disease; 1 = Patient has 10-year risk of future coronary heart disease

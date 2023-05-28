@@ -12,18 +12,14 @@ filename = 'cleaned-framingham.csv'
 
 
 def main():
-    file_locate()
+    file_locate('main.py')
     logistic_regression(filename)
     naive_bayes(filename)
     k_nearest(filename)
-    support_vector(filename)
     gradient_boost(filename)
     random_forest(filename)
-    compare_performance_with_outliers(filename)
 
-
-def file_locate() -> None:
-    __file__ = 'main.py'
+def file_locate(__file__: str) -> None:
     pathstr = os.path.realpath(__file__)
     directory = os.path.dirname(pathstr)
     directory = directory.replace('src', 'data')

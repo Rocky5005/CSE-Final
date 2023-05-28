@@ -1,9 +1,10 @@
 # todo
 improve models 
-    standardize data for some models - so measurements are on similar scale
     compare performance with and without outliers
     potentially resolve data imbalance
+    iteratively improve models
     apply RFE or other technique to adjust parameters
+    cross validation
 
 data analysis
     add additional analysis

@@ -6,6 +6,7 @@ from mlmodels import support_vector
 from mlmodels import gradient_boost
 from mlmodels import random_forest
 from mlmodels import compare_performance_with_outliers
+from mlmodels import apply_rfe
 
 
 filename = 'cleaned-framingham.csv'
@@ -18,6 +19,8 @@ def main():
     k_nearest(filename)
     gradient_boost(filename)
     random_forest(filename)
+    compare_performance_with_outliers(filename)
+    apply_rfe(filename)
 
 def file_locate(__file__: str) -> None:
     pathstr = os.path.realpath(__file__)

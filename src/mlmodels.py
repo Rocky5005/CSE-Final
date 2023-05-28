@@ -12,6 +12,7 @@ from sklearn.svm import SVC
 import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import RFE
 
 
 
@@ -212,3 +213,35 @@ def compare_performance_with_outliers(filename):
     print("F1-score:", f1_score_without_outliers)
 
 
+def apply_rfe(filename):
+
+
+
+    data = pd.read_csv(filename)
+
+    #WE NEED TO UPDATE TARGET_VARIABLE
+
+    X = data.drop('target_variable', axis=1)
+    y = data['target_variable']
+
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    model = LogisticRegression()
+
+    n_features_to_select = 5
+
+    rfe = RFE(estimator=model, n_features_to_select=n_features_to_select)
+    rfe.fit(X_train, y_train)
+
+    selected_features = rfe.support_
+
+    X_train_selected = X_train[:, selected_features]
+    X_test_selected = X_test[:, selected_features]
+
+    model.fit(X_train_selected, y_train)
+
+    y_pred = model.predict(X_test_selected)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    print("Accuracy:", accuracy)

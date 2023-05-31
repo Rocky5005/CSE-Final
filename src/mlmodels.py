@@ -158,8 +158,8 @@ def compare_performance_with_outliers(filename):
     data = pd.read_csv(filename)
 
     # FIX TARGET AND INPUT FEATURES
-    target_variable = "target"
-    numerical_features = ["feature1", "feature2", "feature3"]
+    target_variable = "TenYearCHD"
+    numerical_features = ["cigsPerDay", "male", "age"]
 
     # Identify outliers
     z_scores = stats.zscore(data[numerical_features])
@@ -251,10 +251,8 @@ def apply_rfe(filename):
 
     data = pd.read_csv(filename)
 
-    # WE NEED TO UPDATE TARGET_VARIABLE
-
-    X = data.drop("target_variable", axis=1)
-    y = data["target_variable"]
+    X = data.drop("TenYearCHD", axis=1)
+    y = data["TenYearCHD"]
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42

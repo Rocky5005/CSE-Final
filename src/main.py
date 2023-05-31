@@ -1,5 +1,5 @@
 import os
-from mlmodels import logistic_regression
+from ml_models import logistic_regression
 from mlmodels import naive_bayes
 from mlmodels import k_nearest
 from mlmodels import support_vector
@@ -14,7 +14,7 @@ filename = 'cleaned-framingham.csv'
 
 def main():
     file_locate('main.py')
-    logistic_regression(filename)
+    logistic_regression.logistic_regression(filename)
     naive_bayes(filename)
     k_nearest(filename)
     gradient_boost(filename)

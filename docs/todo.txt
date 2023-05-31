@@ -4,6 +4,8 @@ improve models
     potentially resolve data imbalance
     iteratively improve models
     apply RFE or other technique to adjust parameters
+    resampling
+    hyperparameter tuning
     cross validation
 
 data analysis
@@ -13,4 +15,3 @@ data analysis
 
 interface   
     create interface using best performing model
-

@@ -14,6 +14,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_selection import RFE
+import matplotlib.pyplot as plt
 
 
 def split_data(features, labels):
@@ -28,32 +29,6 @@ def split_data(features, labels):
     return (features_train, features_test, labels_train, labels_test)
 
 
-def logistic_regression(filename: str) -> None:
-    print("Logistic Regression")
-    df = pd.read_csv(filename)
-    features = df.loc[:, df.columns != "TenYearCHD"]
-    labels = df["TenYearCHD"]
-    features_train, features_test, labels_train, labels_test = split_data(
-        features, labels
-    )  # stratified data
-
-    # Perform standardization on training data
-    scaler = StandardScaler()
-    scaled_features_train = scaler.fit_transform(features_train)
-
-    # Apply the same standardization to testing data
-    scaled_features_test = scaler.transform(features_test)
-
-    model = LogisticRegression(random_state=42)
-    model.fit(scaled_features_train, labels_train)
-    labels_pred = model.predict(scaled_features_test)
-    cm = confusion_matrix(labels_test, labels_pred)
-    print(cm)
-    accuracy = accuracy_score(labels_test, labels_pred)
-    print("Accuracy: ", accuracy)
-    report = classification_report(labels_test, labels_pred)
-    print("Classification Report:")
-    print(report)
 
 
 def naive_bayes(filename: str) -> None:

@@ -3,8 +3,9 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
-import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RepeatedStratifiedKFold
 
 
 def logistic_regression(filename: str):
@@ -25,14 +26,17 @@ def logistic_regression(filename: str):
     scaled_features_train = scaler.fit_transform(features_train)
     # Apply the same standardization to testing data
     scaled_features_test = scaler.transform(features_test)
-    model = LogisticRegression()
+    model = LogisticRegression(penalty='l2', C=0.00000001,
+                               solver='liblinear', )
+    model.fit(scaled_features_train, labels_train)
     labels_pred = model.predict(scaled_features_test)
     labels_train_pred = model.predict(scaled_features_train)
-    labels_train_df = pd.DataFrame(labels_train_pred)
-    plt.hist(labels_train_df)
     return (labels_train, labels_train_pred, labels_test, labels_pred)
 
-def threshold_sample(scaled_features_train, scaled_features_test, labels_train, labels_test):
+
+# Tunes prediction threshold
+def threshold_sample(scaled_features_train, scaled_features_test,
+                     labels_train, labels_test):
     model = LogisticRegression()
     model.fit(scaled_features_train, labels_train)
     labels_pred = model.predict_proba(scaled_features_test)
@@ -49,7 +53,39 @@ def threshold_sample(scaled_features_train, scaled_features_test, labels_train, 
             best_f1_score = f1
     end_labels_pred = (labels_pred[:, 1] > best_threshold).astype(int)
     print("Best threshold", best_threshold)
+    return end_labels_pred
 
 
-#def hyperparameter_search(scaled_features_train, scaled_features_test, labels_train, labels_test):
-    
+# Uses gridsearch to tune hyperparameters
+def hyperparameter_search(filename):
+    df = pd.read_csv(filename)
+    features = df.loc[:, df.columns != "TenYearCHD"]
+    labels = df["TenYearCHD"]
+    (
+        features_train,
+        features_test,
+        labels_train,
+        labels_test,
+    ) = train_test_split(
+        features, labels, test_size=0.2, stratify=labels, random_state=42
+    )
+    scaler = StandardScaler()
+    scaled_features_train = scaler.fit_transform(features_train)
+    # Apply the same standardization to testing data
+    scaled_features_test = scaler.transform(features_test)
+    cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+    space = dict()
+    space['solver'] = ['liblinear']
+    space['penalty'] = ['l2']
+    space['C'] = [0.00001, 0.0000001, 0.000001, 0.0001, 0.001, 0.01, 0.1,
+                  0.00000001, 0.0000000001, 0.0000000001, 0.0000000000001]
+    model = LogisticRegression()
+    grid_search = GridSearchCV(model, space, scoring='f1', n_jobs=-1, cv=cv)
+    grid_search.fit(scaled_features_train, labels_train)
+    best_params = grid_search.best_params_
+    best_model = LogisticRegression(**best_params)
+    best_model.fit(scaled_features_train, labels_train)
+    labels_pred = best_model.predict(scaled_features_test)
+    f1 = f1_score(labels_test, labels_pred)
+    print(best_params)
+    print("Hyperparameter tuned:", f1)

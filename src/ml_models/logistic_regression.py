@@ -33,7 +33,8 @@ def logistic_regression(filename: str):
     scaled_features_test = scaler.transform(features_test)
     model = LogisticRegression(penalty='l2', C=0.00000001,
                                solver='liblinear')
-    cv_scores = cross_val_score(model, scaled_features_train, labels_train, cv=10,  scoring='f1_weighted')
+    cv_scores = cross_val_score(model, scaled_features_train,
+                                labels_train, cv=10,  scoring='f1_weighted')
     mean_score = cv_scores.mean()
     print("Mean Score: {:.2f}".format(mean_score))
     std_dev = cv_scores.std()

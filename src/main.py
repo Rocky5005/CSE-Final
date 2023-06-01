@@ -1,7 +1,7 @@
 import os
 from ml_models import logistic_regression
-from mlmodels import naive_bayes
-from mlmodels import k_nearest
+from ml_models import naive_bayes
+from ml_models import k_nearest_neighbors
 from mlmodels import support_vector
 from mlmodels import gradient_boost
 from mlmodels import random_forest
@@ -15,8 +15,8 @@ filename = 'cleaned-framingham.csv'
 def main():
     file_locate('main.py')
     logistic_regression.logistic_regression(filename)
-    naive_bayes(filename)
-    k_nearest(filename)
+    naive_bayes.naive_bayes(filename)
+    k_nearest_neighbors.k_nearest(filename)
     gradient_boost(filename)
     random_forest(filename)
     compare_performance_with_outliers(filename)

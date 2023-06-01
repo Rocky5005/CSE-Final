@@ -6,6 +6,7 @@ from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RepeatedStratifiedKFold
+from imblearn.over_sampling import RandomOverSampler
 
 
 def logistic_regression(filename: str):
@@ -13,13 +14,16 @@ def logistic_regression(filename: str):
     df = pd.read_csv(filename)
     features = df.loc[:, df.columns != "TenYearCHD"]
     labels = df["TenYearCHD"]
+    oversampler = RandomOverSampler(random_state=42)
+    features_resampled, labels_resampled = oversampler.fit_resample(features,
+                                                                    labels)
     (
         features_train,
         features_test,
         labels_train,
         labels_test,
     ) = train_test_split(
-        features, labels, test_size=0.2, stratify=labels, random_state=42
+        features_resampled, labels_resampled, test_size=0.2, random_state=42
     )  # stratified data
     # Perform standardization on training data
     scaler = StandardScaler()

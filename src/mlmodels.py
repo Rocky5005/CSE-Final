@@ -29,56 +29,6 @@ def split_data(features, labels):
     return (features_train, features_test, labels_train, labels_test)
 
 
-
-
-def naive_bayes(filename: str) -> None:
-    print("Naive Bayes:")
-    df = pd.read_csv(filename)
-    features = df.loc[:, df.columns != "TenYearCHD"]
-    labels = df["TenYearCHD"]
-    features_train, features_test, labels_train, labels_test = split_data(
-        features, labels
-    )  # stratified data
-    model = BernoulliNB()
-    model.fit(features_train, labels_train)
-    labels_pred = model.predict(features_test)
-    cm = confusion_matrix(labels_test, labels_pred)
-    print(cm)
-    accuracy = accuracy_score(labels_test, labels_pred)
-    print("Accuracy: ", accuracy)
-    report = classification_report(labels_test, labels_pred)
-    print("Classification Report:")
-    print(report)
-
-
-def k_nearest(filename: str) -> None:
-    print("K-Nearest Neighbors:")
-    df = pd.read_csv(filename)
-    features = df.loc[:, df.columns != "TenYearCHD"]
-    labels = df["TenYearCHD"]
-    features_train, features_test, labels_train, labels_test = split_data(
-        features, labels
-    )  # stratified data
-    k = 3  # change value using testing
-    # Perform standardization on training data
-    scaler = StandardScaler()
-    scaled_features_train = scaler.fit_transform(features_train)
-
-    # Apply the same standardization to testing data
-    scaled_features_test = scaler.transform(features_test)
-
-    model = KNeighborsClassifier(n_neighbors=k)
-    model.fit(scaled_features_train, labels_train)
-    labels_pred = model.predict(scaled_features_test)
-    cm = confusion_matrix(labels_test, labels_pred)
-    print(cm)
-    accuracy = accuracy_score(labels_test, labels_pred)
-    print("Accuracy: ", accuracy)
-    report = classification_report(labels_test, labels_pred)
-    print("Classification Report:")
-    print(report)
-
-
 def support_vector(filename: str) -> None:
     print("SVM: ")
     df = pd.read_csv(filename)

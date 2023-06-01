@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RepeatedStratifiedKFold
 from imblearn.over_sampling import RandomOverSampler
+from sklearn.model_selection import cross_val_score
 
 
 def logistic_regression(filename: str):
@@ -31,7 +32,12 @@ def logistic_regression(filename: str):
     # Apply the same standardization to testing data
     scaled_features_test = scaler.transform(features_test)
     model = LogisticRegression(penalty='l2', C=0.00000001,
-                               solver='liblinear', )
+                               solver='liblinear')
+    cv_scores = cross_val_score(model, scaled_features_train, labels_train, cv=10,  scoring='f1_weighted')
+    mean_score = cv_scores.mean()
+    print("Mean Score: {:.2f}".format(mean_score))
+    std_dev = cv_scores.std()
+    print("Standard Deviation: {:.2f}".format(std_dev))
     model.fit(scaled_features_train, labels_train)
     labels_pred = model.predict(scaled_features_test)
     labels_train_pred = model.predict(scaled_features_train)

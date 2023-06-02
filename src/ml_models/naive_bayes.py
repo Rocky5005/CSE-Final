@@ -10,23 +10,24 @@ def naive_bayes(filename: str):
     df = pd.read_csv(filename)
     features = df.loc[:, df.columns != "TenYearCHD"]
     labels = df["TenYearCHD"]
-    oversampler = RandomOverSampler(random_state=42)
-    features_resampled, labels_resampled = oversampler.fit_resample(features,
-                                                                    labels)
     (
         features_train,
         features_test,
         labels_train,
         labels_test,
     ) = train_test_split(
-        features_resampled, labels_resampled, test_size=0.2, random_state=42
+        features, labels, test_size=0.2, stratify=labels, random_state=42
     )  # stratified data
+    oversampler = RandomOverSampler(random_state=42)
+    (
+        features_resampled, labels_resampled
+    ) = oversampler.fit_resample(features_train,
+                                 labels_train)  # Resample training data
     model = BernoulliNB()
-    model.fit(features_train, labels_train)
+    model.fit(features_resampled, labels_resampled)
     labels_pred = model.predict(features_test)
-    model.fit(features_train, labels_train)
-    labels_train_pred = model.predict(features_train)
-    return (labels_train, labels_train_pred, labels_test, labels_pred)
+    labels_train_pred = model.predict(features_resampled)
+    return (labels_resampled, labels_train_pred, labels_test, labels_pred)
 
 
 def find_alpha(filename: str):  # alpha does not seem to have much of an impact

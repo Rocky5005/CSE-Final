@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import xgboost as xgb
 from imblearn.over_sampling import RandomOverSampler
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -20,13 +19,19 @@ def gradient_boost(filename: str):
         labels_train,
         labels_test,
     ) = train_test_split(
-        features_resampled, labels_resampled, test_size=0.2, random_state=42
-    )
+        features, labels, test_size=0.2, stratify=labels, random_state=42
+    )  # stratified data
+    oversampler = RandomOverSampler(random_state=42)
+    (
+        features_resampled, labels_resampled
+    ) = oversampler.fit_resample(features_train,
+                                 labels_train)  # Resample training data
     model = xgb.XGBClassifier()
-    model.fit(features_train, labels_train)
+    model.fit(features_resampled, labels_resampled)
     labels_pred = model.predict(features_test)
-    labels_train_pred = model.predict(features_train)
-    return (labels_train, labels_train_pred, labels_test, labels_pred)
+    labels_train_pred = model.predict(features_resampled)
+    return (labels_resampled, labels_train_pred, labels_test, labels_pred)
+
 
 def grid_search(filename):
     df = pd.read_csv(filename)
@@ -44,7 +49,7 @@ def grid_search(filename):
         features_resampled, labels_resampled, test_size=0.2, random_state=42
     )
     param_grid = {
-        'max_depth': range(3,10),
+        'max_depth': range(3, 10),
         'learning_rate': [0.1, 0.01, 0.001],
         'n_estimators': [100, 500, 1000],
         'subsample': [0.5, 0.8, 1.0],
@@ -54,7 +59,8 @@ def grid_search(filename):
         'reg_lambda': [0, 0.5, 1.0]
     }
     model = xgb.XGBClassifier()
-    grid_search = GridSearchCV(model, param_grid, scoring='f1', cv=5)
+    grid_search = GridSearchCV(model, param_grid, scoring='f1',
+                               cv=5, verbose=1)
     grid_search.fit(features_train, labels_train)
     best_model = grid_search.best_estimator_
     best_params = grid_search.best_params_

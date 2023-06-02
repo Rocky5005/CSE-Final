@@ -1,17 +1,19 @@
 # todo
 improve models 
     compare performance with and without outliers
-    potentially resolve data imbalance
+    potentially resolve data imbalance - compare resampling with stratified data
     iteratively improve models
     apply RFE or other technique to adjust parameters
-    resampling
-    hyperparameter tuning
-    cross validation
+    resampling - applied, need to compare with/without/potentially consider implementing SMOTE
+    hyperparameter tuning - done, just need to run
 
 data analysis
     add additional analysis
     run analysis on finished models
     implement traditional algorithm and compare 
+    find feature importance from models 
+    learning curves
+    run statistical test between finished models
 
 interface   
     create interface using best performing model

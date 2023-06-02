@@ -6,7 +6,7 @@ from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RepeatedStratifiedKFold
-from imblearn.over_sampling import RandomOverSampler
+from imblearn.over_sampling import RandomOverSampler, SMOTE
 
 
 def logistic_regression(filename: str):
@@ -22,7 +22,7 @@ def logistic_regression(filename: str):
     ) = train_test_split(
         features, labels, test_size=0.2, stratify=labels, random_state=42
     )  # stratified data
-    oversampler = RandomOverSampler(random_state=42)
+    oversampler = SMOTE(random_state=42)
     (
         features_resampled, labels_resampled
     ) = oversampler.fit_resample(features_train,

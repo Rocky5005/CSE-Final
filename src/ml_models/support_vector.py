@@ -62,13 +62,10 @@ def grid_search(filename):
     scaled_features_test = scaler.transform(features_test)
     model = SVC()
     param_grid = {
-        'C': np.logspace(-5, 5, num=11),
+        'C': np.logspace(-3, 3, num=7),
         'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
-        'degree': [2, 3, 4],
-        'gamma': ['scale', 'auto', 0.1, 1.0],
-        'coef0': [-1, 0, 1],
+        'gamma': ['scale', 'auto'],
         'shrinking': [True, False],
-        'probability': [True, False],
         'class_weight': [None, 'balanced', {0: 0.5, 1: 0.5}],
     }
     grid_search = GridSearchCV(model, param_grid, scoring='f1',

@@ -2,9 +2,9 @@ import os
 from ml_models import logistic_regression
 from ml_models import naive_bayes
 from ml_models import k_nearest_neighbors
-from mlmodels import support_vector
-from mlmodels import gradient_boost
-from mlmodels import random_forest
+from ml_models import support_vector
+from ml_models import gradient_boost
+from ml_models import random_forest
 from mlmodels import compare_performance_with_outliers
 from mlmodels import apply_rfe
 

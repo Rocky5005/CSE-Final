@@ -37,31 +37,30 @@ def grid_search(filename):
     df = pd.read_csv(filename)
     features = df.loc[:, df.columns != "TenYearCHD"]
     labels = df["TenYearCHD"]
-    oversampler = RandomOverSampler(random_state=42)
-    features_resampled, labels_resampled = oversampler.fit_resample(features,
-                                                                    labels)
     (
         features_train,
         features_test,
         labels_train,
         labels_test,
     ) = train_test_split(
-        features_resampled, labels_resampled, test_size=0.2, random_state=42
-    )
+        features, labels, test_size=0.2, stratify=labels, random_state=42
+    )  # stratified data
+    oversampler = RandomOverSampler(random_state=42)
+    (
+        features_resampled, labels_resampled
+    ) = oversampler.fit_resample(features_train,
+                                 labels_train)
     param_grid = {
+        'booster': ['gbtree', 'gblinear', 'dart'],
         'max_depth': range(3, 10),
         'learning_rate': [0.1, 0.01, 0.001],
         'n_estimators': [100, 500, 1000],
         'subsample': [0.5, 0.8, 1.0],
-        'colsample_bytree': [0.5, 0.8, 1.0],
-        'gamma': [0, 0.3, 0.5],
-        'reg_alpha': [0, 0.5, 1.0],
-        'reg_lambda': [0, 0.5, 1.0]
     }
     model = xgb.XGBClassifier()
     grid_search = GridSearchCV(model, param_grid, scoring='f1',
                                cv=5, verbose=1)
-    grid_search.fit(features_train, labels_train)
+    grid_search.fit(features_resampled, labels_resampled)
     best_model = grid_search.best_estimator_
     best_params = grid_search.best_params_
     labels_pred = best_model.predict(features_test)

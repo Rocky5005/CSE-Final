@@ -10,6 +10,7 @@ data analysis
     find feature importance from models 
     learning curves
     run statistical test between finished models
+    write tests
 
 interface   
     create interface using best performing model

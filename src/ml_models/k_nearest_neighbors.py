@@ -46,20 +46,22 @@ def grid_search(filename):
     df = pd.read_csv(filename)
     features = df.loc[:, df.columns != "TenYearCHD"]
     labels = df["TenYearCHD"]
-    oversampler = RandomOverSampler(random_state=42)
-    features_resampled, labels_resampled = oversampler.fit_resample(features,
-                                                                    labels)
     (
         features_train,
         features_test,
         labels_train,
         labels_test,
     ) = train_test_split(
-        features_resampled, labels_resampled, test_size=0.2, random_state=42
-    )
+        features, labels, test_size=0.2, stratify=labels, random_state=42
+    )  # stratified data
+    oversampler = RandomOverSampler(random_state=42)
+    (
+        features_resampled, labels_resampled
+    ) = oversampler.fit_resample(features_train,
+                                 labels_train)
     # Perform standardization on training data
     scaler = StandardScaler()
-    scaled_features_train = scaler.fit_transform(features_train)
+    scaled_features_train = scaler.fit_transform(features_resampled)
 
     # Apply the same standardization to testing data
     scaled_features_test = scaler.transform(features_test)
@@ -69,11 +71,11 @@ def grid_search(filename):
         'weights': ['uniform', 'distance'],  # Weight metrics
         'metric': ['euclidean', 'manhattan',
                    'chebyshev', 'minkowski'],  # Distance metrics
-        'algorithm': ['brute', 'kd_tree', 'ball_tree']  # Algorithms
+        'algorithm': ['brute', 'kd_tree', 'ball_tree', 'auto']  # Algorithms
     }
     grid_search = GridSearchCV(model, param_grid, scoring='f1',
                                cv=5, verbose=1)
-    grid_search.fit(scaled_features_train, labels_train)
+    grid_search.fit(scaled_features_train, labels_resampled)
     best_model = grid_search.best_estimator_
     best_params = grid_search.best_params_
     labels_pred = best_model.predict(scaled_features_test)

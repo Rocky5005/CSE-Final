@@ -11,9 +11,6 @@ def random_forest(filename: str):
     df = pd.read_csv(filename)
     features = df.loc[:, df.columns != "TenYearCHD"]
     labels = df["TenYearCHD"]
-    oversampler = RandomOverSampler(random_state=42)
-    features_resampled, labels_resampled = oversampler.fit_resample(features,
-                                                                    labels)
     (
         features_train,
         features_test,
@@ -43,37 +40,34 @@ def grid_search(filename):
     df = pd.read_csv(filename)
     features = df.loc[:, df.columns != "TenYearCHD"]
     labels = df["TenYearCHD"]
-    oversampler = RandomOverSampler(random_state=42)
-    features_resampled, labels_resampled = oversampler.fit_resample(features,
-                                                                    labels)
     (
         features_train,
         features_test,
         labels_train,
         labels_test,
     ) = train_test_split(
-        features_resampled, labels_resampled, test_size=0.2, random_state=42
+        features, labels, test_size=0.2, stratify=labels, random_state=42
     )  # stratified data
+    oversampler = RandomOverSampler(random_state=42)
+    (
+        features_resampled, labels_resampled
+    ) = oversampler.fit_resample(features_train,
+                                 labels_train)  # stratified data
     # Perform standardization on training data
     scaler = StandardScaler()
-    scaled_features_train = scaler.fit_transform(features_train)
+    scaled_features_train = scaler.fit_transform(features_resampled)
     # Apply the same standardization to testing data
     scaled_features_test = scaler.transform(features_test)
     param_grid = {
         'n_estimators': [100, 200, 300],
         'criterion': ['gini', 'entropy'],
         'max_depth': [None, 5, 10, 20],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4],
-        'max_features': ['auto', 'sqrt', 'log2'],
-        'bootstrap': [True, False],
-        'class_weight': [None, 'balanced'],
-        'oob_score': [False, True]
+        'max_features': ['sqrt', 'log2'],
     }
     model = RandomForestClassifier()
     grid_search = GridSearchCV(model, param_grid, cv=5, scoring='f1',
                                verbose=1)
-    grid_search.fit(scaled_features_train, labels_train)
+    grid_search.fit(scaled_features_train, labels_resampled)
     best_model = grid_search.best_estimator_
     best_params = grid_search.best_params_
     labels_pred = best_model.predict(scaled_features_test)

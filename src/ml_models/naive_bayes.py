@@ -41,13 +41,18 @@ def find_alpha(filename: str):  # alpha does not seem to have much of an impact
         labels_test,
     ) = train_test_split(
         features, labels, test_size=0.2, stratify=labels, random_state=42
-    )
+    )  # stratified data
+    oversampler = RandomOverSampler(random_state=42)
+    (
+        features_resampled, labels_resampled
+    ) = oversampler.fit_resample(features_train,
+                                 labels_train)
     alpha_values = [0.001, 0.1, 0.01, 0.0001, 1, 10]
     best_alpha = None
     best_f1_score = 0.0
     for alpha in alpha_values:
         model = BernoulliNB(alpha=alpha)
-        model.fit(features_train, labels_train)
+        model.fit(features_resampled, labels_resampled)
         labels_pred = model.predict(features_test)
         f1 = f1_score(labels_test, labels_pred)
         if f1 > best_f1_score:
@@ -68,9 +73,14 @@ def find_threshold(filename):
         labels_test,
     ) = train_test_split(
         features, labels, test_size=0.2, stratify=labels, random_state=42
-    )
+    )  # stratified data
+    oversampler = RandomOverSampler(random_state=42)
+    (
+        features_resampled, labels_resampled
+    ) = oversampler.fit_resample(features_train,
+                                 labels_train)
     model = BernoulliNB()
-    model.fit(features_train, labels_train)
+    model.fit(features_resampled, labels_resampled)
     labels_pred_prob = model.predict_proba(features_test)[:, 1]
     thresholds = [0.1, 0.3, 0.5, 0.7, 0.9]
     best_threshold = None
@@ -82,7 +92,7 @@ def find_threshold(filename):
             best_f1_score = f1
             best_threshold = threshold
     best_model = BernoulliNB()
-    best_model.fit(features_train, labels_train)
+    best_model.fit(features_resampled, labels_resampled)
     labels_test_pred_prob = best_model.predict_proba(features_test)[:, 1]
     labels_pred = (labels_test_pred_prob >= best_threshold).astype(int)
     test_f1_score = f1_score(labels_test, labels_pred)

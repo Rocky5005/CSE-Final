@@ -5,7 +5,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import RepeatedStratifiedKFold
 from imblearn.over_sampling import RandomOverSampler, SMOTE
 
 
@@ -74,24 +73,33 @@ def hyperparameter_search(filename):
         labels_test,
     ) = train_test_split(
         features, labels, test_size=0.2, stratify=labels, random_state=42
-    )
+    )  # stratified data
+    oversampler = RandomOverSampler(random_state=42)
+    (
+        features_resampled, labels_resampled
+    ) = oversampler.fit_resample(features_train,
+                                 labels_train)#
     scaler = StandardScaler()
-    scaled_features_train = scaler.fit_transform(features_train)
+    scaled_features_train = scaler.fit_transform(features_resampled)
     # Apply the same standardization to testing data
     scaled_features_test = scaler.transform(features_test)
-    cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
-    space = dict()
-    space['solver'] = ['liblinear']
-    space['penalty'] = ['l2']
-    space['C'] = [0.00001, 0.0000001, 0.000001, 0.0001, 0.001, 0.01, 0.1,
-                  0.00000001, 0.0000000001, 0.0000000001, 0.0000000000001]
+    grid_params = [
+        {'solver': ['saga', 'liblinear'],
+         'penalty': ['l1', 'l2'],
+         'max_iter': [50, 100, 200, 500, 1000, 2500],
+         'C': np.logspace(-3, 3, num=7)},
+        {'solver': ['newton-cg', 'lbfgs'],
+         'penalty': ['l2'],
+         'max_iter': [50, 100, 200, 500, 1000, 2500],
+         'C': np.logspace(-3, 3, num=7)},
+    ]
     model = LogisticRegression()
-    grid_search = GridSearchCV(model, space, scoring='f1', n_jobs=-1, cv=cv)
-    grid_search.fit(scaled_features_train, labels_train)
+    grid_search = GridSearchCV(model, grid_params, scoring='f1',
+                               n_jobs=-1, cv=5, verbose=1)
+    grid_search.fit(scaled_features_train, labels_resampled)
+    best_model = grid_search.best_estimator_
     best_params = grid_search.best_params_
-    best_model = LogisticRegression(**best_params)
-    best_model.fit(scaled_features_train, labels_train)
     labels_pred = best_model.predict(scaled_features_test)
     f1 = f1_score(labels_test, labels_pred)
-    print(best_params)
-    print("Hyperparameter tuned:", f1)
+    print("Best Hyperparameters:", best_params)
+    print("F1:", f1)

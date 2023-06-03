@@ -52,10 +52,8 @@ def grid_search(filename):
                                  labels_train)
     param_grid = {
         'booster': ['gbtree', 'gblinear', 'dart'],
-        'max_depth': range(3, 10),
         'learning_rate': [0.1, 0.01, 0.001],
         'n_estimators': [100, 500, 1000],
-        'subsample': [0.5, 0.8, 1.0],
     }
     model = xgb.XGBClassifier()
     grid_search = GridSearchCV(model, param_grid, scoring='f1',

@@ -31,8 +31,7 @@ def logistic_regression(filename: str):
     scaled_features_train = scaler.fit_transform(features_resampled)
     # Apply the same standardization to testing data
     scaled_features_test = scaler.transform(features_test)
-    model = LogisticRegression(penalty='l2', C=0.00000001,
-                               solver='liblinear')
+    model = LogisticRegression(C=0.01, max_iter=50, penalty='l1', solver='saga')
     model.fit(scaled_features_train, labels_resampled)
     labels_pred = model.predict(scaled_features_test)
     labels_train_pred = model.predict(scaled_features_train)

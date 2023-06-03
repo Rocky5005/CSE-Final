@@ -35,7 +35,7 @@ def compare_performance_with_outliers(filename):
 
     # FIX TARGET AND INPUT FEATURES
     target_variable = "TenYearCHD"
-    numerical_features = ["cigsPerDay", "male", "age"]
+    numerical_features = ["cigsPerDay", "totChol", "sysBP", "diaBP", "BMI", "heartRate", "glucose"]
 
     # Identify outliers
     z_scores = stats.zscore(data[numerical_features])
@@ -152,3 +152,4 @@ def apply_rfe(filename):
 
     accuracy = accuracy_score(y_test, y_pred)
     print("Accuracy:", accuracy)
+    print("Selected Features: ", selected_features)

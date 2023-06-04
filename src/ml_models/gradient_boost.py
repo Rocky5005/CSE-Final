@@ -1,8 +1,9 @@
 import pandas as pd
 import xgboost as xgb
-from imblearn.over_sampling import RandomOverSampler
+from imblearn.over_sampling import RandomOverSampler, SMOTE
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import f1_score
+from imblearn.pipeline import Pipeline
 
 
 def gradient_boost(filename: str):
@@ -10,18 +11,16 @@ def gradient_boost(filename: str):
     df = pd.read_csv(filename)
     features = df.loc[:, df.columns != "TenYearCHD"]
     labels = df["TenYearCHD"]
-    oversampler = RandomOverSampler(random_state=42)
-    features_resampled, labels_resampled = oversampler.fit_resample(features,
-                                                                    labels)
     (
         features_train,
         features_test,
         labels_train,
         labels_test,
     ) = train_test_split(
-        features, labels, test_size=0.2, stratify=labels, random_state=42
+        features, labels, test_size=0.2,
+        stratify=labels, random_state=42
     )  # stratified data
-    oversampler = RandomOverSampler(random_state=42)
+    oversampler = SMOTE(random_state=42)
     (
         features_resampled, labels_resampled
     ) = oversampler.fit_resample(features_train,
@@ -44,24 +43,20 @@ def grid_search(filename):
         labels_test,
     ) = train_test_split(
         features, labels, test_size=0.2, stratify=labels, random_state=42
-    )  # stratified data
-    oversampler = RandomOverSampler(random_state=42)
-    (
-        features_resampled, labels_resampled
-    ) = oversampler.fit_resample(features_train,
-                                 labels_train)
+    )
     param_grid = {
-        'booster': ['gbtree', 'gblinear', 'dart'],
-        'learning_rate': [0.1, 0.01, 0.001],
-        'n_estimators': [100, 500, 1000],
+        'classification__booster': ['gbtree', 'gblinear', 'dart'],
+        'classification__learning_rate': [0.1, 0.01, 0.001],
+        'classification__n_estimators': [100, 500, 1000],
     }
-    model = xgb.XGBClassifier()
+    model = Pipeline([
+        ('sampling', SMOTE()),
+        ('classification', xgb.XGBClassifier())
+    ])
     grid_search = GridSearchCV(model, param_grid, scoring='f1',
-                               cv=5, verbose=1)
-    grid_search.fit(features_resampled, labels_resampled)
-    best_model = grid_search.best_estimator_
+                               n_jobs=-1, cv=5, verbose=1)
+    grid_search.fit(features_train, labels_train)
     best_params = grid_search.best_params_
-    labels_pred = best_model.predict(features_test)
-    f1 = f1_score(labels_test, labels_pred)
+    best_score = grid_search.best_score_
     print("Best Hyperparameters:", best_params)
-    print("F1:", f1)
+    print("F1:", best_score)

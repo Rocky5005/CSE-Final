@@ -1,9 +1,10 @@
 from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
-from imblearn.over_sampling import RandomOverSampler
+from imblearn.over_sampling import RandomOverSampler, SMOTE
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
+from imblearn.pipeline import Pipeline
 
 
 def k_nearest(filename: str):
@@ -11,34 +12,26 @@ def k_nearest(filename: str):
     df = pd.read_csv(filename)
     features = df.loc[:, df.columns != "TenYearCHD"]
     labels = df["TenYearCHD"]
-    oversampler = RandomOverSampler(random_state=42)
-    features_resampled, labels_resampled = oversampler.fit_resample(features,
-                                                                    labels)
+    scaler = StandardScaler()
+    scaled_features = scaler.fit_transform(features)
     (
         features_train,
         features_test,
         labels_train,
         labels_test,
     ) = train_test_split(
-        features, labels, test_size=0.2, stratify=labels, random_state=42
+        scaled_features, labels, test_size=0.2,
+        stratify=labels, random_state=42
     )  # stratified data
-    oversampler = RandomOverSampler(random_state=42)
+    oversampler = SMOTE(random_state=42)
     (
         features_resampled, labels_resampled
     ) = oversampler.fit_resample(features_train,
-                                 labels_train)  # Resample training data
-    k = 3  # change value using testing
-    # Perform standardization on training data
-    scaler = StandardScaler()
-    scaled_features_train = scaler.fit_transform(features_resampled)
-
-    # Apply the same standardization to testing data
-    scaled_features_test = scaler.transform(features_test)
-
-    model = KNeighborsClassifier(n_neighbors=k)
-    model.fit(scaled_features_train, labels_resampled)
-    labels_pred = model.predict(scaled_features_test)
-    labels_train_pred = model.predict(scaled_features_train)
+                                 labels_train)
+    model = KNeighborsClassifier()
+    model.fit(features_resampled, labels_resampled)
+    labels_pred = model.predict(features_test)
+    labels_train_pred = model.predict(features_resampled)
     return (labels_resampled, labels_train_pred, labels_test, labels_pred)
 
 
@@ -53,32 +46,23 @@ def grid_search(filename):
         labels_test,
     ) = train_test_split(
         features, labels, test_size=0.2, stratify=labels, random_state=42
-    )  # stratified data
-    oversampler = RandomOverSampler(random_state=42)
-    (
-        features_resampled, labels_resampled
-    ) = oversampler.fit_resample(features_train,
-                                 labels_train)
-    # Perform standardization on training data
-    scaler = StandardScaler()
-    scaled_features_train = scaler.fit_transform(features_resampled)
-
-    # Apply the same standardization to testing data
-    scaled_features_test = scaler.transform(features_test)
-    model = KNeighborsClassifier()
+    )
     param_grid = {
-        'n_neighbors': range(1, 15),  # K values
-        'weights': ['uniform', 'distance'],  # Weight metrics
-        'metric': ['euclidean', 'manhattan',
+        'classification__n_neighbors': range(1, 15),  # K values
+        'classification__weights': ['uniform', 'distance'],  # Weight metrics
+        'classification__metric': ['euclidean', 'manhattan',
                    'chebyshev', 'minkowski'],  # Distance metrics
-        'algorithm': ['brute', 'kd_tree', 'ball_tree', 'auto']  # Algorithms
+        'classification__algorithm': ['brute', 'kd_tree', 'ball_tree', 'auto']  # Algorithms
     }
+    model = Pipeline([
+        ('sampling', SMOTE()),
+        ('scaling', StandardScaler()),
+        ('classification', KNeighborsClassifier())
+    ])
     grid_search = GridSearchCV(model, param_grid, scoring='f1',
                                cv=5, verbose=1)
-    grid_search.fit(scaled_features_train, labels_resampled)
-    best_model = grid_search.best_estimator_
+    grid_search.fit(features_train, labels_train)
     best_params = grid_search.best_params_
-    labels_pred = best_model.predict(scaled_features_test)
-    f1 = f1_score(labels_test, labels_pred)
+    best_score = grid_search.best_score_
     print("Best Hyperparameters:", best_params)
-    print("F1:", f1)
+    print("F1:", best_score)

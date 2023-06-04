@@ -4,30 +4,9 @@ from scipy import stats
 from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score, classification_report
-from sklearn.naive_bayes import BernoulliNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
-import xgboost as xgb
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score
 from sklearn.feature_selection import RFE
-import matplotlib.pyplot as plt
 
-
-
-def split_data(features, labels):
-    (
-        features_train,
-        features_test,
-        labels_train,
-        labels_test,
-    ) = train_test_split(
-        features, labels, test_size=0.2, stratify=labels, random_state=42
-    )
-    return (features_train, features_test, labels_train, labels_test)
 
 def compare_performance_with_outliers(filename):
     # Load data from file

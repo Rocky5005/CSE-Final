@@ -5,8 +5,8 @@ from ml_models import k_nearest_neighbors
 from ml_models import support_vector
 from ml_models import gradient_boost
 from ml_models import random_forest
-from mlmodels import compare_performance_with_outliers
-from mlmodels import apply_rfe
+from support_functions import compare_performance_with_outliers
+from support_functions import apply_rfe
 
 
 filename = 'cleaned-framingham.csv'

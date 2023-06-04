@@ -28,7 +28,7 @@ def random_forest(filename: str):
         features_resampled, labels_resampled
     ) = oversampler.fit_resample(features_train,
                                  labels_train)  # Resample training data
-    model = RandomForestClassifier()
+    model = RandomForestClassifier(criterion='entropy', max_depth = 5, max_features='sqrt', n_estimators=300)
     model.fit(features_resampled, labels_resampled)
     labels_pred = model.predict(features_test)
     labels_train_pred = model.predict(features_resampled)

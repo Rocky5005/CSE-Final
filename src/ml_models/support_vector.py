@@ -25,12 +25,12 @@ def support_vector(filename: str):
         scaled_features, labels, test_size=0.2,
         stratify=labels, random_state=42
     )  # stratified data
-    oversampler = RandomOverSampler(random_state=42)
+    oversampler = SMOTE(random_state=42)
     (
         features_resampled, labels_resampled
     ) = oversampler.fit_resample(features_train,
                                  labels_train)  # Resample training data
-    model = SVC()
+    model = SVC(C=0.001, class_weight=None, gamma='scale', kernel='linear', shrinking=False)
     model.fit(features_resampled, labels_resampled)
     labels_pred = model.predict(features_test)
     labels_train_pred = model.predict(features_resampled)

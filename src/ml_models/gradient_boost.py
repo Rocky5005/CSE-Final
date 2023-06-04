@@ -50,7 +50,7 @@ def grid_search(filename):
         'classification__n_estimators': [100, 500, 1000],
     }
     model = Pipeline([
-        ('sampling', SMOTE()),
+        ('sampling', RandomOverSampler()),
         ('classification', xgb.XGBClassifier())
     ])
     grid_search = GridSearchCV(model, param_grid, scoring='f1',

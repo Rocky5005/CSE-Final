@@ -54,7 +54,7 @@ def grid_search(filename):
         'classification__max_features': ['sqrt', 'log2'],
     }
     model = Pipeline([
-        ('sampling', SMOTE()),
+        ('sampling', RandomOverSampler()),
         ('scaling', StandardScaler()),
         ('classification', RandomForestClassifier())
     ])

@@ -58,7 +58,7 @@ def grid_search(filename):
         'classification__class_weight': [None, 'balanced', {0: 0.5, 1: 0.5}],
     }
     model = Pipeline([
-        ('sampling', SMOTE()),
+        ('sampling', RandomOverSampler()),
         ('scaling', StandardScaler()),
         ('classification', SVC())
     ])

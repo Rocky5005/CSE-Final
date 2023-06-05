@@ -30,9 +30,13 @@ def logistic_regression(filename: str):
         features_resampled, labels_resampled
     ) = oversampler.fit_resample(features_train,
                                  labels_train)  # Resample training data
-    model = LogisticRegression(C=0.001, max_iter=500,
-                               penalty='l2', solver='saga')
+    model = LogisticRegression()
     model.fit(features_resampled, labels_resampled)
+    feature_importance = np.abs(model.coef_[0])
+    importance_df = pd.DataFrame({'Feature': features.columns, 'Importance': feature_importance})
+    importance_df = importance_df.sort_values(by='Importance', ascending=False)
+    print(importance_df)
+    plot_learning_curve(features, labels, model)
     labels_pred = model.predict(features_test)
     labels_train_pred = model.predict(features_resampled)
     return (labels_resampled, labels_train_pred, labels_test, labels_pred)
